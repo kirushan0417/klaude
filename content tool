@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLAUDE</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0e;--s1:#111116;--s2:#18181f;--s3:#202028;--s4:#2c2c38;
+  --border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.10);
+  --text:#f2f0ec;--muted:rgba(242,240,236,.35);--muted2:rgba(242,240,236,.6);
+  --accent:#d4af37;--r:9px;
+  --font:'DM Sans',sans-serif;--fh:'Bebas Neue',sans-serif;--fm:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);display:flex;flex-direction:column;height:100vh;font-size:13px;}
+
+/* TOPBAR */
+.topbar{height:56px;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;}
+.logo{font-family:var(--fh);font-size:24px;letter-spacing:.04em;color:var(--text);white-space:nowrap;flex-shrink:0;}
+.logo span{color:var(--accent);}
+.brand-sw{display:flex;gap:3px;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:3px;flex-shrink:0;}
+.btab{font-family:var(--fh);font-size:12px;letter-spacing:.07em;padding:5px 14px;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btab:hover{color:var(--text);}
+.btab.jc-on{background:linear-gradient(135deg,#2a2010,#1e1800);color:#d4af37;box-shadow:0 0 0 1px rgba(212,175,55,.28);}
+.btab.ace-on{background:linear-gradient(135deg,#0d1828,#091220);color:#4d9fff;box-shadow:0 0 0 1px rgba(77,159,255,.28);}
+.btab.fs-on{background:linear-gradient(135deg,#1a0e2a,#120920);color:#a855f7;box-shadow:0 0 0 1px rgba(168,85,247,.28);}
+.keys{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;}
+.kw{display:flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:4px 9px;}
+.kl{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.kdot{width:5px;height:5px;border-radius:50%;background:var(--s4);flex-shrink:0;transition:background .2s;}
+.kdot.ok{background:#22c55e;}
+.kinput{background:transparent;border:none;color:var(--text);font-family:var(--fm);font-size:10px;width:110px;outline:none;}
+.kinput::placeholder{color:var(--muted);}
+
+/* MAIN */
+.main{display:grid;grid-template-columns:300px 1fr;flex:1;overflow:hidden;min-height:0;}
+
+/* SIDEBAR */
+.sb{background:var(--s1);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--s4) transparent;}
+.sb::-webkit-scrollbar{width:3px;}
+.sb::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px;}
+.panel{display:none;flex-direction:column;}
+.panel.active{display:flex;}
+.sec{padding:13px 13px 0;}
+.seclabel{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.seclabel::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* count */
+.count-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.cbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--s2);cursor:pointer;transition:all .18s;}
+.cbtn:hover{border-color:var(--border2);background:var(--s3);}
+.cbtn.on{border-color:var(--accent);background:rgba(212,175,55,.08);}
+.cbtn .n{font-family:var(--fh);font-size:22px;color:var(--muted2);line-height:1;transition:color .18s;}
+.cbtn.on .n{color:var(--accent);}
+.cbtn .w{font-size:8px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+
+/* buttons */
+.fbtn{width:100%;padding:12px;border-radius:var(--r);border:none;font-family:var(--fh);font-size:15px;letter-spacing:.09em;cursor:pointer;transition:all .2s;}
+.fbtn:disabled{opacity:.4;cursor:not-allowed;}
+.fbtn:active{transform:scale(.98);}
+.fbtn.jc{background:linear-gradient(135deg,#d4af37,#b8960f);color:#000;}
+.fbtn.ace{background:linear-gradient(135deg,#4d9fff,#1a6fd4);color:#000;}
+.ldr{display:none;align-items:center;gap:7px;padding-top:8px;font-size:11px;color:var(--muted2);}
+.ldr.on{display:flex;}
+.spin{width:12px;height:12px;border:1.5px solid rgba(255,255,255,.08);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* story cards */
+.slist{display:flex;flex-direction:column;gap:4px;}
+.scard{border-radius:7px;border:1px solid var(--border);background:var(--s2);padding:9px 10px;cursor:pointer;transition:border-color .15s,transform .12s;}
+.scard:hover{border-color:var(--border2);transform:translateX(2px);}
+.scard.on{border-color:var(--accent);}
+.scard.on.ace-card{border-color:#4d9fff;}
+.scard-top{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.spill{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:3px;color:#000;flex-shrink:0;}
+.snum{font-family:var(--fh);font-size:11px;color:var(--muted);margin-left:auto;}
+.stitle{font-family:var(--fh);font-size:12px;letter-spacing:.03em;line-height:1.3;color:var(--text);}
+.src-link{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:4px;padding:3px 8px;transition:color .15s,border-color .15s;}
+.src-link:hover{color:var(--text);border-color:var(--border2);}
+.src-link svg{flex-shrink:0;}
+.empty{display:flex;flex-direction:column;align-items:center;gap:5px;padding:18px 0;color:var(--muted);font-size:11px;text-align:center;}
+.eicon{font-size:26px;opacity:.3;margin-bottom:3px;}
+
+/* photo grid */
+.igrid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;}
+.ithumb{aspect-ratio:1/1;object-fit:cover;border-radius:4px;cursor:pointer;border:2px solid transparent;opacity:.55;width:100%;transition:opacity .15s,border-color .15s;background:var(--s3);}
+.ithumb:hover{opacity:.9;}
+.ithumb.on{opacity:1;border-color:var(--accent);}
+.imsg{grid-column:1/-1;font-size:10px;color:var(--muted);padding:4px 0;display:flex;align-items:center;gap:5px;}
+
+/* fields */
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+textarea,input[type=text],input[type=password]{background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font);font-size:12px;padding:7px 10px;width:100%;outline:none;resize:none;line-height:1.5;transition:border-color .18s;}
+textarea:focus,input[type=text]:focus,input[type=password]:focus{border-color:var(--border2);}
+.brow{display:flex;align-items:center;gap:8px;}
+.brow input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer;}
+.bval{font-family:var(--fm);font-size:11px;color:var(--accent);min-width:32px;text-align:right;}
+.dlbtn{width:100%;background:var(--s2);color:var(--text);font-family:var(--fh);font-size:14px;letter-spacing:.1em;padding:11px;border-radius:var(--r);border:1px solid var(--border2);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.dlbtn:hover{background:var(--s3);}
+.dlbtn:active{transform:scale(.98);}
+
+/* failsafe */
+.fs-note{font-size:11px;color:var(--muted2);line-height:1.6;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px;}
+.fs-note strong{color:var(--text);display:block;margin-bottom:5px;}
+.fs-note code{font-family:var(--fm);font-size:10px;color:#a855f7;background:rgba(168,85,247,.1);padding:1px 5px;border-radius:3px;}
+.fs-group{display:flex;flex-direction:column;gap:7px;}
+.fs-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;display:block;}
+.fs-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.fs-toggle input[type=checkbox]{accent-color:#a855f7;width:13px;height:13px;cursor:pointer;}
+.fs-toggle span{font-size:11px;color:var(--muted2);}
+.fs-status{font-size:10px;text-align:center;color:#22c55e;min-height:14px;}
+
+/* preview */
+.prev{background:#06060a;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.prev::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+.pinner{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;z-index:1;max-height:100%;}
+canvas#postCanvas{display:block;border-radius:3px;box-shadow:0 24px 80px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.05);flex-shrink:0;}
+.cap-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:11px 14px;flex-shrink:0;}
+.cap-text{font-size:11px;line-height:1.65;color:var(--muted2);}
+.cap-text strong{color:var(--text);font-weight:600;}
+.cap-tags{color:#5a7fff;margin-top:4px;font-size:10px;line-height:1.6;}
+.toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:5px 16px;font-size:10px;color:var(--muted2);opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:10;}
+.toast.show{opacity:1;}
+
+body.ace .cbtn.on{border-color:#4d9fff;background:rgba(77,159,255,.08);}
+body.ace .cbtn.on .n{color:#4d9fff;}
+body.ace .spin{border-top-color:#4d9fff;}
+body.ace .brow input[type=range]{accent-color:#4d9fff;}
+body.ace .bval{color:#4d9fff;}
+body.ace .ithumb.on{border-color:#4d9fff;}
+body.ace .scard.on{border-color:#4d9fff;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo" style="font-size:24px;letter-spacing:.04em;">KL<span style="color:var(--accent);">AUDE</span></div>
+
+  <!-- centered keys -->
+  <div class="keys" style="margin-left:auto;margin-right:auto;">
+    <div class="kw">
+      <span class="kl">Claude</span>
+      <div class="kdot" id="cdot"></div>
+      <input class="kinput" id="kClaude" type="password" placeholder="sk-ant-..." oninput="kcheck('kClaude','cdot')">
+    </div>
+    <div class="kw">
+      <span class="kl">Pexels</span>
+      <div class="kdot" id="pxdot"></div>
+      <input class="kinput" id="kPexels" type="text" placeholder="pexels key..." oninput="kcheck('kPexels','pxdot');syncPexelsKey()">
+    </div>
+    <div class="kw" style="gap:6px;">
+      <span class="kl">News</span>
+      <div class="kdot ok"></div>
+      <span style="font-family:var(--fm);font-size:10px;color:var(--muted2);" id="srcLabel">CBC ✓</span>
+    </div>
+  </div>
+
+  <!-- brand tabs right -->
+  <div class="brand-sw">
+    <button class="btab jc-on" id="tabJC"  onclick="switchBrand('jc')">🎰 Jackpot City CA</button>
+    <button class="btab"       id="tabACE" onclick="switchBrand('ace')">🃏 ACE.com USA</button>
+    <button class="btab"       id="tabFS"  onclick="switchBrand('fs')">⚡ Failsafe</button>
+  </div>
+</div>
+
+<div class="main">
+<div class="sb">
+
+  <!-- MAIN PANEL -->
+  <div class="panel active" id="panelMain">
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">How many posts</div>
+      <div class="count-grid">
+        <div class="cbtn on" data-n="1" onclick="pickN(this)"><span class="n">1</span><span class="w">post</span></div>
+        <div class="cbtn"    data-n="2" onclick="pickN(this)"><span class="n">2</span><span class="w">posts</span></div>
+        <div class="cbtn"    data-n="3" onclick="pickN(this)"><span class="n">3</span><span class="w">posts</span></div>
+        <div class="cbtn"    data-n="4" onclick="pickN(this)"><span class="n">4</span><span class="w">posts</span></div>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <button class="fbtn jc" id="fbtn" onclick="doFetch()">⚡ GENERATE POSTS</button>
+      <div class="ldr" id="ldr"><div class="spin" id="spinEl"></div><span id="lmsg">Working...</span></div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">Original Source</div>
+      <div id="srcPanel" style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+        <div style="font-size:10px;color:var(--muted);font-style:italic;">Generate posts to see source link</div>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">Live Stories</div>
+      <div class="slist" id="slist">
+        <div class="empty"><div class="eicon">✦</div>Hit Generate to pull today's stories</div>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">Images — Phase 2</div>
+      <!-- Pexels search -->
+      <div style="display:flex;gap:6px;margin-bottom:7px;">
+        <input type="text" id="imgQuery" placeholder="Search Pexels or type topic..." style="flex:1;font-size:11px;padding:6px 9px;">
+        <button onclick="searchPexels()" style="background:var(--accent);color:#000;border:none;border-radius:6px;padding:6px 11px;font-family:var(--fh);font-size:12px;letter-spacing:.06em;cursor:pointer;white-space:nowrap;">Search</button>
+      </div>
+      <div style="font-size:9px;color:var(--muted);margin-bottom:7px;">
+        Add your Pexels key in Failsafe tab → searches auto. Or type any topic and hit Search.
+      </div>
+      <div class="igrid" id="igrid">
+        <div class="imsg">Enter a Pexels key in Failsafe tab, or type a topic above</div>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;display:flex;flex-direction:column;gap:9px;">
+      <div class="seclabel">Edit</div>
+
+      <div class="field">
+        <label>Handle Style</label>
+        <div style="display:flex;gap:5px;">
+          <button onclick="setHandleStyle('light')" id="btnHandleLight"
+            style="flex:1;padding:6px;border-radius:6px;border:1px solid var(--accent);background:rgba(212,175,55,.15);color:var(--accent);font-family:var(--fh);font-size:12px;letter-spacing:.06em;cursor:pointer;">
+            ☀ Light
+          </button>
+          <button onclick="setHandleStyle('dark')" id="btnHandleDark"
+            style="flex:1;padding:6px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--muted);font-family:var(--fh);font-size:12px;letter-spacing:.06em;cursor:pointer;">
+            ● Dark
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Stripe above text</label>
+        <div style="display:flex;gap:5px;">
+          <button onclick="setStripe(true)" id="btnStripeOn"
+            style="flex:1;padding:6px;border-radius:6px;border:1px solid var(--accent);background:rgba(212,175,55,.15);color:var(--accent);font-family:var(--fh);font-size:12px;letter-spacing:.06em;cursor:pointer;">
+            On
+          </button>
+          <button onclick="setStripe(false)" id="btnStripeOff"
+            style="flex:1;padding:6px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--muted);font-family:var(--fh);font-size:12px;letter-spacing:.06em;cursor:pointer;">
+            Off
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Headline</label>
+        <textarea id="fHead" rows="2" oninput="renderCanvas()" style="font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;font-size:14px;text-transform:uppercase;"></textarea>
+      </div>
+      <div class="field">
+        <label>Caption</label>
+        <textarea id="fCap" rows="3" oninput="updateCap()"></textarea>
+      </div>
+      <div class="field">
+        <label>Brightness</label>
+        <div class="brow">
+          <input type="range" id="brightness" min="20" max="100" value="72" oninput="onBright(this.value)">
+          <span class="bval" id="bval">72%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:16px;">
+      <button class="dlbtn" onclick="download()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download JPG
+      </button>
+    </div>
+  </div>
+
+  <!-- FAILSAFE PANEL -->
+  <div class="panel" id="panelFS">
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">Failsafe</div>
+      <div class="fs-note">
+        <strong>⚡ Backup integrations</strong>
+        If CBC or ABC News scraping stops working, enable one of these alternatives. Toggle ON and switch back to your brand tab — it activates automatically. Settings save in your browser.
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">NewsAPI <span style="font-size:9px;opacity:.5;margin-left:4px;">newsapi.org — free</span></div>
+      <div class="fs-group">
+        <div class="field">
+          <label class="fs-label">API Key</label>
+          <input type="text" id="fsNewsKey" placeholder="your newsapi key..." oninput="fsSave()">
+        </div>
+        <label class="fs-toggle">
+          <input type="checkbox" id="fsNewsOn" onchange="fsSave()">
+          <span>Use NewsAPI instead of RSS</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">Unsplash <span style="font-size:9px;opacity:.5;margin-left:4px;">unsplash.com/developers — free</span></div>
+      <div class="fs-group">
+        <div class="field">
+          <label class="fs-label">Access Key</label>
+          <input type="text" id="fsUnsplashKey" placeholder="your unsplash access key..." oninput="fsSave()">
+        </div>
+        <label class="fs-toggle">
+          <input type="checkbox" id="fsUnsplashOn" onchange="fsSave()">
+          <span>Use Unsplash if story has no image</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">Pexels <span style="font-size:9px;opacity:.5;margin-left:4px;">requires server.py locally</span></div>
+      <div class="fs-group">
+        <div class="field">
+          <label class="fs-label">API Key</label>
+          <input type="text" id="fsPexelsKey" placeholder="your pexels key..." oninput="fsSave()">
+        </div>
+        <label class="fs-toggle">
+          <input type="checkbox" id="fsPexelsOn" onchange="fsSave()">
+          <span>Use Pexels via local server.py</span>
+        </label>
+        <div class="fs-note" style="font-size:10px;margin-top:2px;">Pexels key is also in the topbar for quick access. Works on GitHub Pages ✓</div>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:13px;">
+      <div class="seclabel">Custom RSS Feed</div>
+      <div class="fs-group">
+        <div class="field">
+          <label class="fs-label">Feed URL</label>
+          <input type="text" id="fsRssUrl" placeholder="https://yoursite.com/feed.rss" oninput="fsSave()">
+        </div>
+        <label class="fs-toggle">
+          <input type="checkbox" id="fsRssOn" onchange="fsSave()">
+          <span>Use this RSS instead of CBC/ABC</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="sec" style="padding-bottom:16px;">
+      <div class="fs-status" id="fsStatus"></div>
+    </div>
+  </div>
+
+</div><!-- /sb -->
+
+<div class="prev">
+  <div class="pinner">
+    <canvas id="postCanvas" width="1080" height="1080"></canvas>
+    <div class="cap-card" id="capCard" style="width:400px;">
+      <div class="cap-text" id="capText">Caption appears here after generating.</div>
+      <div class="cap-tags" id="capTags"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+</div>
+
+<script>
+const BRANDS={
+  jc:{
+    handle:'@jackpotcity.ca', accent:'#d4af37', localCat:'ONLY IN CANADA', srcLabel:'CBC ✓',
+    newsApiCountry:'ca',
+    rss:['https://www.cbc.ca/cmlink/rss-topstories','https://www.cbc.ca/cmlink/rss-canada','https://www.cbc.ca/cmlink/rss-world'],
+    system:'You create viral Instagram posts for "Jackpot City CA" styled like Nugget, Puberty, WorldStar. Mix: surprising Canada facts, wild true stories, feel-good moments, funny Only-in-Canada content, max 1 casino tip per batch. Headlines: tabloid front page energy, impossible to scroll past, NOT corporate.'
+  },
+  ace:{
+    handle:'@ace.com', accent:'#4d9fff', localCat:'ONLY IN USA', srcLabel:'ABC News ✓',
+    newsApiCountry:'us',
+    rss:['https://feeds.abcnews.com/abcnews/topstories','https://feeds.abcnews.com/abcnews/usheadlines','https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml'],
+    system:'You create viral Instagram posts for "ACE.com" styled like Nugget, Puberty, WorldStar. Mix: surprising USA facts, wild true stories, feel-good moments, funny Only-in-America content, max 1 casino tip per batch. Headlines: tabloid front page energy, impossible to scroll past, NOT corporate.'
+  }
+};
+const MIXES={
+  1:['1 x "WILD"'],
+  2:['1 x "DID YOU KNOW"','1 x "WILD"'],
+  3:['1 x "DID YOU KNOW"','1 x "WILD"','1 x "FEEL GOOD"'],
+  4:['2 x "DID YOU KNOW"','1 x "WILD"','1 x LOCAL_CAT']
+};
+const CAT_COL={'DID YOU KNOW':'#f5a623','WILD':'#8b5cf6','FEEL GOOD':'#22c55e','NEWS':'#ef4444','CASINO TIPS':null,'ONLY IN CANADA':'#dc2626','ONLY IN USA':'#1a6fd4','LOCAL':null};
+
+let brand='jc', postCount=1, posts=[], selCat='DID YOU KNOW';
+let currentImg=null, brightness=72, fontsReady=false, rssItems=[];
+let handleStyle='light', showStripe=true;
+
+const B=()=>BRANDS[brand];
+const cCol=c=>(c==='CASINO TIPS'||c==='LOCAL')?B().accent:(CAT_COL[c]||B().accent);
+
+// utils
+function kcheck(id,dot){document.getElementById(dot).classList.toggle('ok',document.getElementById(id).value.trim().length>8);}
+function toast(msg,dur=2500){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),dur);}
+function setLoader(on,msg){document.getElementById('ldr').classList.toggle('on',on);if(msg)document.getElementById('lmsg').textContent=msg;}
+function pickN(el){document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');postCount=parseInt(el.dataset.n);}
+function updateCap(){const v=document.getElementById('fCap').value;document.getElementById('capText').innerHTML=v.replace(/([@]\S+\.\S+)/g,'<strong>$1</strong>');}
+function onBright(v){brightness=parseInt(v);document.getElementById('bval').textContent=v+'%';renderCanvas();}
+
+// failsafe
+// Handle style toggle
+function setHandleStyle(style){
+  handleStyle=style;
+  document.getElementById('btnHandleLight').style.borderColor=style==='light'?B().accent:'var(--border)';
+  document.getElementById('btnHandleLight').style.background=style==='light'?B().accent+'26':'var(--s2)';
+  document.getElementById('btnHandleLight').style.color=style==='light'?B().accent:'var(--muted)';
+  document.getElementById('btnHandleDark').style.borderColor=style==='dark'?B().accent:'var(--border)';
+  document.getElementById('btnHandleDark').style.background=style==='dark'?B().accent+'26':'var(--s2)';
+  document.getElementById('btnHandleDark').style.color=style==='dark'?B().accent:'var(--muted)';
+  renderCanvas();
+}
+
+// Stripe toggle
+function setStripe(on){
+  showStripe=on;
+  document.getElementById('btnStripeOn').style.borderColor=on?B().accent:'var(--border)';
+  document.getElementById('btnStripeOn').style.background=on?B().accent+'26':'var(--s2)';
+  document.getElementById('btnStripeOn').style.color=on?B().accent:'var(--muted)';
+  document.getElementById('btnStripeOff').style.borderColor=!on?B().accent:'var(--border)';
+  document.getElementById('btnStripeOff').style.background=!on?B().accent+'26':'var(--s2)';
+  document.getElementById('btnStripeOff').style.color=!on?B().accent:'var(--muted)';
+  renderCanvas();
+}
+
+// Sync Pexels key from topbar into failsafe storage and vice versa
+function syncPexelsKey(){
+  const val=document.getElementById('kPexels').value.trim();
+  const cfg=fsGet();
+  cfg.pexelsKey=val;
+  localStorage.setItem('ps_fs',JSON.stringify(cfg));
+}
+
+function fsSave(){
+  // also sync pexels key back to topbar
+  const topbarKey=document.getElementById('kPexels').value.trim();
+  if(topbarKey) document.getElementById('kPexels').value=topbarKey;
+  localStorage.setItem('ps_fs',JSON.stringify({
+    newsKey:document.getElementById('fsNewsKey').value,
+    newsOn:document.getElementById('fsNewsOn').checked,
+    unsplashKey:document.getElementById('fsUnsplashKey').value,
+    unsplashOn:document.getElementById('fsUnsplashOn').checked,
+    pexelsKey:document.getElementById('fsPexelsKey').value,
+    pexelsOn:document.getElementById('fsPexelsOn').checked,
+    rssUrl:document.getElementById('fsRssUrl').value,
+    rssOn:document.getElementById('fsRssOn').checked,
+  }));
+  document.getElementById('fsStatus').textContent='Saved ✓';
+  setTimeout(()=>document.getElementById('fsStatus').textContent='',1800);
+}
+function fsLoad(){
+  try{
+    const c=JSON.parse(localStorage.getItem('ps_fs')||'{}');
+    ['fsNewsKey','fsUnsplashKey','fsPexelsKey','fsRssUrl'].forEach(id=>{if(c[id.replace('fs','').replace(/Key|Url/,'').toLowerCase()+'Key']||c[id])document.getElementById(id).value=c[id]||'';});
+    const cfg=c;
+    if(cfg.newsKey) document.getElementById('fsNewsKey').value=cfg.newsKey||'';
+    if(cfg.unsplashKey) document.getElementById('fsUnsplashKey').value=cfg.unsplashKey||'';
+    if(cfg.pexelsKey) document.getElementById('fsPexelsKey').value=cfg.pexelsKey||'';
+    if(cfg.rssUrl) document.getElementById('fsRssUrl').value=cfg.rssUrl||'';
+    document.getElementById('fsNewsOn').checked=!!cfg.newsOn;
+    document.getElementById('fsUnsplashOn').checked=!!cfg.unsplashOn;
+    document.getElementById('fsPexelsOn').checked=!!cfg.pexelsOn;
+    document.getElementById('fsRssOn').checked=!!cfg.rssOn;
+  }catch(e){}
+}
+function fsGet(){try{return JSON.parse(localStorage.getItem('ps_fs')||'{}')}catch(e){return{};}}
+
+// brand switch
+function switchBrand(b){
+  const prev=brand; brand=b;
+  const isFS=b==='fs', isAce=b==='ace';
+  document.getElementById('tabJC').className='btab'+(b==='jc'?' jc-on':'');
+  document.getElementById('tabACE').className='btab'+(isAce?' ace-on':'');
+  document.getElementById('tabFS').className='btab'+(isFS?' fs-on':'');
+  document.body.classList.toggle('ace',isAce);
+  document.getElementById('panelMain').classList.toggle('active',!isFS);
+  document.getElementById('panelFS').classList.toggle('active',isFS);
+  if(!isFS){
+    document.getElementById('fbtn').className='fbtn '+(isAce?'ace':'jc');
+    document.getElementById('spinEl').style.borderTopColor=B().accent;
+    document.getElementById('srcLabel').textContent=B().srcLabel;
+    posts=[];rssItems=[];
+    document.getElementById('slist').innerHTML='<div class="empty"><div class="eicon">✦</div>Hit Generate to pull today\'s stories</div>';
+    document.getElementById('igrid').innerHTML='<div class="imsg">Photos load after generating</div>';
+    document.getElementById('fHead').value='';
+    document.getElementById('fCap').value='';
+    document.getElementById('capText').innerHTML='Caption appears here after generating.';
+    document.getElementById('capTags').textContent='';
+    currentImg=null;renderCanvas();
+  }
+}
+
+// canvas
+const canvas=document.getElementById('postCanvas');
+const ctx=canvas.getContext('2d');
+const SZ=1080;
+
+function sizeCanvas(){
+  const area=document.querySelector('.prev');
+  const avail=Math.min(area.clientWidth-48,area.clientHeight-130,430);
+  canvas.style.width=avail+'px';canvas.style.height=avail+'px';
+  document.getElementById('capCard').style.width=avail+'px';
+}
+window.addEventListener('resize',sizeCanvas);sizeCanvas();
+
+function renderCanvas(){
+  ctx.clearRect(0,0,SZ,SZ);
+
+  // bg
+  if(currentImg){
+    ctx.filter=`brightness(${brightness/100}) saturate(1.06)`;
+    const iw=currentImg.naturalWidth||currentImg.width||SZ;
+    const ih=currentImg.naturalHeight||currentImg.height||SZ;
+    const sc=Math.max(SZ/iw,SZ/ih);
+    ctx.drawImage(currentImg,(SZ-iw*sc)/2,(SZ-ih*sc)/2,iw*sc,ih*sc);
+    ctx.filter='none';
+  } else {
+    ctx.fillStyle='#0e0e12';ctx.fillRect(0,0,SZ,SZ);
+    ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=1;
+    for(let i=0;i<SZ;i+=60){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,SZ);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(SZ,i);ctx.stroke();}
+  }
+
+  // gradient — strong at bottom
+  const g=ctx.createLinearGradient(0,0,0,SZ);
+  g.addColorStop(0.0,'rgba(0,0,0,0.02)');
+  g.addColorStop(0.20,'rgba(0,0,0,0.0)');
+  g.addColorStop(0.48,'rgba(0,0,0,0.5)');
+  g.addColorStop(0.68,'rgba(0,0,0,0.84)');
+  g.addColorStop(0.82,'rgba(0,0,0,0.96)');
+  g.addColorStop(1.0,'rgba(0,0,0,1.0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,SZ,SZ);
+
+  // handle — light or dark
+  ctx.font=`600 28px ${fontsReady?'DM Sans':'sans-serif'}`;
+  if(handleStyle==='dark'){
+    ctx.fillStyle='rgba(0,0,0,0.82)';
+    ctx.shadowColor='rgba(255,255,255,0.3)';
+  } else {
+    ctx.fillStyle='rgba(255,255,255,0.82)';
+    ctx.shadowColor='rgba(0,0,0,0.9)';
+  }
+  ctx.shadowBlur=10;
+  ctx.fillText(B().handle,44,64);
+  ctx.shadowBlur=0;
+
+  // ── BOTTOM SECTION — pixel-perfect, built top-down after measuring total height
+  const PAD     = 44;
+  const HL_SIZE = 76;
+  const HL_LH   = HL_SIZE * 1.12;   // real line height ≈ font-size × 1.12
+  const PILL_H  = 42;
+  const PILL_PAD= 22;
+  const DOT_R   = 10;
+  const GAP_DOT_PILL = 18;  // gap between bottom of dot and top of pill
+  const GAP_PILL_HL  = 14;  // gap between bottom of pill and top of first line
+  const BOT_PAD = 50;       // breathing room from very bottom edge
+
+  const col       = cCol(selCat);
+  const pillLabel = selCat==='LOCAL' ? B().localCat : selCat;
+  const hl        = (document.getElementById('fHead').value || 'YOUR HEADLINE APPEARS HERE').toUpperCase();
+
+  // 1. measure headline lines using actual font
+  const HL_FONT  = `bold ${HL_SIZE}px ${fontsReady?'Bebas Neue':'Impact,sans-serif'}`;
+  const PILL_FONT= `700 22px ${fontsReady?'DM Sans':'sans-serif'}`;
+  ctx.font = HL_FONT;
+  const hlLines  = wrapText(ctx, hl, HL_FONT, SZ - PAD * 2);
+
+  // 2. total block height (dot + gap + headline + bottom padding)
+  const hlBlockH  = hlLines.length * HL_LH;
+  const totalH    = DOT_R * 2
+                  + GAP_DOT_PILL
+                  + hlBlockH
+                  + BOT_PAD;
+
+  // 3. anchor so bottom of block sits at SZ
+  const blockTop  = SZ - totalH;
+
+  // 4. positions
+  const dotCY     = blockTop + DOT_R;
+  const hlFirst   = dotCY + DOT_R + GAP_DOT_PILL + HL_SIZE;
+
+  // 5. stripe OR dot above headline
+  if(showStripe){
+    // two horizontal white lines with brand dot in centre gap
+    const STRIPE_Y   = hlFirst - HL_SIZE - 30;
+    const STRIPE_W   = SZ - PAD * 2;
+    const LINE_H     = 3;
+    const LINE_GAP   = 8;
+    ctx.shadowBlur   = 0;
+
+    // top line
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillRect(PAD, STRIPE_Y, STRIPE_W, LINE_H);
+    // bottom line
+    ctx.fillRect(PAD, STRIPE_Y + LINE_H + LINE_GAP, STRIPE_W, LINE_H);
+
+    // brand dot centred between the two lines
+    const dotMidY = STRIPE_Y + LINE_H + LINE_GAP / 2;
+    ctx.beginPath();
+    ctx.arc(SZ/2, dotMidY, DOT_R + 1, 0, Math.PI*2);
+    ctx.fillStyle = '#000'; ctx.fill(); // knockout circle to cut through lines
+    ctx.beginPath();
+    ctx.arc(SZ/2, dotMidY, DOT_R, 0, Math.PI*2);
+    ctx.fillStyle = col; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2.5; ctx.stroke();
+  } else {
+    // plain dot only
+    ctx.beginPath();
+    ctx.arc(SZ/2, dotCY, DOT_R, 0, Math.PI*2);
+    ctx.fillStyle = col; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke();
+  }
+
+  // 6. draw headline lines downward
+  ctx.font = HL_FONT;
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,0.98)'; ctx.shadowBlur = 22;
+  let ty = hlFirst;
+  hlLines.forEach(line => {
+    ctx.fillText(line, PAD, ty);
+    ty += HL_LH;
+  });
+  ctx.shadowBlur = 0;
+}
+
+function rrect(ctx,x,y,w,h,r,fill){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();ctx.fillStyle=fill;ctx.fill();
+}
+
+function wrapText(ctx,text,fontStr,maxW){
+  ctx.font=fontStr;
+  const words=text.split(' ');const lines=[];let cur='';
+  words.forEach(w=>{
+    const t=cur?cur+' '+w:w;
+    if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t;
+  });if(cur)lines.push(cur);return lines;
+}
+
+// image loader
+function loadImgUrl(url,cb){
+  const img=new Image();
+  img.crossOrigin='anonymous';
+  img.onload=()=>cb(img);
+  img.onerror=()=>cb(null);
+  img.src=url;
+}
+
+// RSS scraper
+// Extract CBC article og:image by fetching the article page
+async function fetchArticleImage(articleUrl){
+  if(!articleUrl) return null;
+  try{
+    const proxy='https://corsproxy.io/?'+encodeURIComponent(articleUrl);
+    const r=await fetch(proxy,{signal:AbortSignal.timeout(6000)});
+    if(!r.ok) return null;
+    const html=await r.text();
+    // og:image is the most reliable
+    const m=html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+           ||html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+    if(m&&m[1]) return m[1];
+    // fallback: first large jpg in page
+    const m2=html.match(/https?:\/\/[^"'<>\s]+\.(?:jpg|jpeg|png|webp)[^"'<>\s]*/i);
+    return m2?m2[0]:null;
+  }catch(e){ return null; }
+}
+
+async function scrapeRSS(urls){
+  const items=[];
+  for(const url of urls.slice(0,2)){
+    try{
+      const proxy='https://corsproxy.io/?'+encodeURIComponent(url);
+      const r=await fetch(proxy,{signal:AbortSignal.timeout(8000)});
+      if(!r.ok) continue;
+      const raw=await r.text();
+      const doc=new DOMParser().parseFromString(raw,'text/xml');
+
+      for(const item of [...doc.querySelectorAll('item')].slice(0,10)){
+        const title=item.querySelector('title')?.textContent?.trim();
+
+        // CBC link lives in a text node AFTER the <link> tag, not inside it
+        // Best approach: grab raw XML of item and regex the link
+        const itemXml=new XMLSerializer().serializeToString(item);
+
+        // Extract link — try multiple patterns
+        let link=null;
+        const lm1=itemXml.match(/<link[^>]*>([^<]+)<\/link>/i);
+        const lm2=itemXml.match(/<link[^>]*\/?>\s*([^<\s][^\s]*cbc\.ca[^\s<"']*)/i);
+        const lm3=itemXml.match(/https?:\/\/(?:www\.)?cbc\.ca\/[^"'<>\s]+/i)
+                 ||itemXml.match(/https?:\/\/(?:www\.)?abcnews\.go\.com\/[^"'<>\s]+/i)
+                 ||itemXml.match(/https?:\/\/(?:www\.)?nytimes\.com\/[^"'<>\s]+/i);
+        if(lm1&&lm1[1]?.includes('http')) link=lm1[1].trim();
+        else if(lm2) link=lm2[1].trim();
+        else if(lm3) link=lm3[0].trim();
+
+        // Also try standard querySelector as fallback
+        if(!link){
+          link=item.getElementsByTagName('link')[0]?.nextSibling?.nodeValue?.trim()||null;
+        }
+
+        // Image: try all RSS image fields first
+        let img=null;
+        const allEls=[...item.getElementsByTagName('*')];
+        for(const el of allEls){
+          const tag=el.tagName.toLowerCase();
+          if(tag.includes('thumbnail')||tag.includes('content')){
+            const u=el.getAttribute('url');
+            if(u&&u.match(/\.(jpg|jpeg|png|webp)/i)){img=u;break;}
+          }
+        }
+        if(!img){
+          const enc=item.querySelector('enclosure');
+          const u=enc?.getAttribute('url');
+          if(u&&u.match(/\.(jpg|jpeg|png|webp)/i)) img=u;
+        }
+        if(!img){
+          const desc=item.querySelector('description')?.textContent||'';
+          const m=desc.match(/src=["'](https?:\/\/[^"'\s]+\.(?:jpg|jpeg|png|webp)[^"'\s]*)/i);
+          if(m) img=m[1];
+        }
+        if(!img){
+          const m=itemXml.match(/https?:\/\/[^"'<>\s]+\.(?:jpg|jpeg|png|webp)/i);
+          if(m) img=m[0];
+        }
+
+        // Date filter — last 12 months only
+        let pubDate=null;
+        const pdEl=item.querySelector('pubDate')||item.querySelector('published')||item.querySelector('updated');
+        if(pdEl) pubDate=new Date(pdEl.textContent.trim());
+        const cutoff=new Date(); cutoff.setFullYear(cutoff.getFullYear()-1);
+        const dateOk=!pubDate||isNaN(pubDate.getTime())||(pubDate>=cutoff);
+
+        if(title&&!title.includes('[Removed]')&&dateOk){
+          items.push({title,img,link,pubDate});
+        }
+      }
+    }catch(e){ console.warn('RSS:',url,e.message); }
+  }
+
+  // Sort newest first
+  items.sort((a,b)=>(!a.pubDate?1:!b.pubDate?-1:b.pubDate-a.pubDate));
+
+  // Fetch article images for items that have a link but no image (async, fill in background)
+  items.forEach(async item=>{
+    if(!item.img&&item.link){
+      item.img=await fetchArticleImage(item.link);
+    }
+  });
+
+  return items;
+}
+
+// NewsAPI fallback
+async function scrapeNewsAPI(key,country){
+  try{
+    const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(`https://newsapi.org/v2/top-headlines?country=${country}&pageSize=10&apiKey=${key}`),{signal:AbortSignal.timeout(8000)});
+    if(!r.ok)return[];
+    const d=await r.json();
+    return(d.articles||[]).filter(a=>a.title&&!a.title.includes('[Removed]')).map(a=>({title:a.title,img:a.urlToImage||null,link:a.url||null}));
+  }catch(e){return[];}
+}
+
+// main news fetch — respects failsafe toggles
+async function fetchNews(){
+  const cfg=fsGet();
+  if(cfg.rssOn&&cfg.rssUrl){const r=await scrapeRSS([cfg.rssUrl]);if(r.length){rssItems=r;return r.map(i=>i.title);}}
+  if(cfg.newsOn&&cfg.newsKey){const r=await scrapeNewsAPI(cfg.newsKey,B().newsApiCountry);if(r.length){rssItems=r;return r.map(i=>i.title);}}
+  const r=await scrapeRSS(B().rss);
+  rssItems=r;return r.map(i=>i.title);
+}
+
+// photo grid — uses RSS images, falls back to Unsplash failsafe
+async function loadPhotoGrid(retryCount=0){
+  const grid=document.getElementById('igrid');
+  const cfg=fsGet();
+  const imgItems=rssItems.filter(i=>i.img).slice(0,8);
+
+  if(!imgItems.length){
+    // Article images may still be loading asynchronously — retry a few times
+    if(retryCount<4){
+      grid.innerHTML=`<div class="imsg"><div class="spin"></div>&nbsp;Loading article images...</div>`;
+      await new Promise(r=>setTimeout(r,1500));
+      return loadPhotoGrid(retryCount+1);
+    }
+    if(cfg.unsplashOn&&cfg.unsplashKey){
+      await loadUnsplash(cfg.unsplashKey, posts[0]?.photo_query||'canada news');
+    } else {
+      grid.innerHTML='<div class="imsg">No images found — enable Unsplash in Failsafe tab as backup</div>';
+    }
+    return;
+  }
+
+  grid.innerHTML='';
+  let firstSet=false;
+  imgItems.forEach((item)=>{
+    const el=document.createElement('img');
+    el.className='ithumb';
+    el.crossOrigin='anonymous';
+    const px='https://corsproxy.io/?'+encodeURIComponent(item.img);
+    el.src=px;
+    el.dataset.full=px;
+    el.title=item.title;
+    el.onclick=()=>selectThumb(el);
+    el.onload=()=>{ if(!firstSet){ firstSet=true; selectThumb(el); } };
+    el.onerror=()=>{ el.style.display='none'; };
+    grid.appendChild(el);
+  });
+}
+
+// Pexels via corsproxy — works on GitHub Pages without a backend
+async function searchPexels(){
+  const key=document.getElementById('kPexels').value.trim();
+  const query=document.getElementById('imgQuery').value.trim()||posts[0]?.photo_query||'canada';
+  const grid=document.getElementById('igrid');
+
+  if(!key){
+    grid.innerHTML='<div class="imsg">Add your Pexels key in the topbar</div>';
+    return;
+  }
+
+  grid.innerHTML='<div class="imsg"><div class="spin"></div>&nbsp;Searching Pexels...</div>';
+  try{
+    // allorigins proxy passes Authorization headers correctly unlike corsproxy
+    const target=`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=8&orientation=square`;
+    // sanitize key — strip any non-ASCII characters that break headers
+    const safeKey=key.replace(/[^ -~]/g,'').trim();
+    const r=await fetch(target,{
+      headers:{'Authorization': safeKey},
+      signal:AbortSignal.timeout(10000)
+    });
+    if(!r.ok) throw new Error('Status '+r.status);
+    const d=await r.json();
+    const photos=d.photos||[];
+    if(!photos.length){grid.innerHTML='<div class="imsg">No results — try different keywords</div>';return;}
+    grid.innerHTML='';
+    let firstSet=false;
+    photos.forEach(ph=>{
+      const el=document.createElement('img');
+      el.className='ithumb';
+      el.crossOrigin='anonymous';
+      el.src=ph.src.medium;
+      el.dataset.full=ph.src.large2x||ph.src.large;
+      el.title='Photo by '+ph.photographer+' on Pexels';
+      el.onclick=()=>selectThumb(el);
+      el.onload=()=>{if(!firstSet){firstSet=true;selectThumb(el);}};
+      el.onerror=()=>el.style.display='none';
+      grid.appendChild(el);
+    });
+  }catch(e){
+    grid.innerHTML=`<div class="imsg">Pexels error: ${e.message} — check your key</div>`;
+  }
+}
+
+async function loadUnsplash(key,query){
+  const grid=document.getElementById('igrid');
+  grid.innerHTML='<div class="imsg"><div class="spin"></div>&nbsp;Loading Unsplash...</div>';
+  try{
+    const r=await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=8&orientation=squarish&client_id=${key}`);
+    const d=await r.json();
+    const photos=d.results||[];
+    if(!photos.length){grid.innerHTML='<div class="imsg">No Unsplash results</div>';return;}
+    grid.innerHTML='';let firstSet=false;
+    photos.forEach(p=>{
+      const el=document.createElement('img');
+      el.className='ithumb';el.crossOrigin='anonymous';
+      el.src=p.urls.small;el.dataset.full=p.urls.regular;
+      el.onclick=()=>selectThumb(el);
+      el.onload=()=>{if(!firstSet){firstSet=true;selectThumb(el);}};
+      el.onerror=()=>el.style.display='none';
+      grid.appendChild(el);
+    });
+  }catch(e){grid.innerHTML='<div class="imsg">Unsplash error</div>';}
+}
+
+function selectThumb(el){
+  document.querySelectorAll('.ithumb').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  loadImgUrl(el.dataset.full,img=>{if(img){currentImg=img;renderCanvas();}});
+}
+
+// main generate
+async function doFetch(){
+  const ck=document.getElementById('kClaude').value.replace(/[^\x20-\x7E]/g,'').trim();
+  if(!ck){alert('Enter your Claude API key.');return;}
+  document.getElementById('fbtn').disabled=true;
+  setLoader(true,'Fetching stories...');
+  const headlines=await fetchNews();
+  setLoader(true,'Claude is writing posts...');
+
+  const today=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const lc=B().localCat;
+  const mix=MIXES[postCount].map(m=>m.replace('LOCAL_CAT',lc)).join(', ');
+  // Build numbered headline list so Claude can reference them by index
+  const numberedHeadlines=headlines.slice(0,10);
+  const newsCtx=numberedHeadlines.length
+    ?'\nToday\'s real headlines (use source_index to reference which one inspired each post):\n'
+      +numberedHeadlines.map((h,i)=>`${i}: ${h}`).join('\n')
+    :'';
+
+  const prompt=`Today is ${today}.${newsCtx}
+
+Generate exactly ${postCount} post${postCount>1?'s':''} using this mix: ${mix}.
+
+- category: exact string from the mix
+- headline: ALL CAPS max 10 words, tabloid energy, NO period
+- caption: 1-2 sentences, casual, emoji at end, starts with "${B().handle}"
+- hashtags: 5 tags as array
+- photo_query: 3-word Unsplash fallback query
+- source_index: the index number (0-9) of the headline above that inspired this post, or -1 if none
+
+Respond ONLY with valid JSON array, no markdown:
+[{"category":"...","headline":"...","caption":"...","hashtags":["..."],"photo_query":"...","source_index":0}]`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':ck,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1400,system:B().system,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    let txt=d.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const si=txt.indexOf('['),ei=txt.lastIndexOf(']');
+    if(si>-1&&ei>-1)txt=txt.slice(si,ei+1);
+    posts=JSON.parse(txt);
+    renderCards();
+    await selectPost(0);
+  }catch(e){alert('Claude error: '+e.message);}
+  document.getElementById('fbtn').disabled=false;
+  setLoader(false);
+}
+
+function renderCards(){
+  const list=document.getElementById('slist');list.innerHTML='';
+  posts.forEach((p,i)=>{
+    const col=cCol(p.category);
+    const srcItem=rssItems[i]||rssItems[0]||null;
+    const srcLink=srcItem?.link||null;
+    const srcTitle=srcItem?.title||null;
+    const el=document.createElement('div');
+    el.className='scard';el.id='sc'+i;
+    el.innerHTML=`
+      <div class="scard-top">
+        <span class="spill" style="background:${col};">${p.category}</span>
+        <span class="snum">#${i+1}</span>
+      </div>
+      <div class="stitle">${p.headline.toUpperCase()}</div>
+      ${srcLink ? `<a class="src-link" href="${srcLink}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View original story
+      </a>` : ''}
+    `;
+    el.onclick=()=>selectPost(i);
+    list.appendChild(el);
+  });
+}
+
+async function selectPost(i){
+  const p=posts[i];if(!p)return;
+  selCat=p.category;
+  document.querySelectorAll('.scard').forEach(c=>c.classList.remove('on','ace-card'));
+  const sc=document.getElementById('sc'+i);
+  if(sc){sc.classList.add('on');if(brand==='ace')sc.classList.add('ace-card');}
+  document.getElementById('fHead').value=p.headline.toUpperCase();
+  document.getElementById('fCap').value=p.caption;
+  updateCap();
+  document.getElementById('capTags').textContent=(p.hashtags||[]).join(' ');
+  renderCanvas();
+
+  // source panel — always show outlet + date + headline from rssItems
+  const panel = document.getElementById('srcPanel');
+  const outlet = brand === 'jc' ? 'CBC News' : 'ABC News';
+  const ac = B().accent;
+
+  // just use the post index directly — post 0 = rssItem 0 etc
+  const srcItem = rssItems[i] || rssItems[0] || null;
+
+  if (srcItem) {
+    let dateStr = 'Today';
+    if (srcItem.pubDate && !isNaN(new Date(srcItem.pubDate).getTime())) {
+      dateStr = new Date(srcItem.pubDate).toLocaleDateString('en-CA', {
+        year: 'numeric', month: 'short', day: 'numeric'
+      });
+    }
+    const linkBtn = srcItem.link
+      ? `<a href="${srcItem.link}" target="_blank" rel="noopener"
+           style="margin-top:9px;display:inline-flex;align-items:center;gap:5px;
+                  font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+                  color:${ac};text-decoration:none;border:1px solid ${ac}55;
+                  border-radius:5px;padding:6px 12px;background:${ac}12;transition:background .15s;"
+           onmouseover="this.style.background='${ac}28'" onmouseout="this.style.background='${ac}12'">
+           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+             <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+             <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+           </svg>
+           Read on ${outlet} →
+         </a>`
+      : `<div style="font-size:9px;color:var(--muted);margin-top:6px;font-style:italic;">
+           Direct link not in RSS feed
+         </div>`;
+
+    panel.innerHTML = `
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;">
+        <span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+                     color:${ac};background:${ac}18;border:1px solid ${ac}44;
+                     border-radius:4px;padding:2px 8px;">${outlet}</span>
+        <span style="font-size:10px;color:var(--muted2);">${dateStr}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text);line-height:1.5;font-weight:500;">
+        ${srcItem.title || ''}
+      </div>
+      ${linkBtn}`;
+  } else {
+    panel.innerHTML = `<div style="font-size:10px;color:var(--muted);font-style:italic;">
+      Hit Generate to see source info
+    </div>`;
+  }
+
+  // auto-search Pexels if key is set, else retry for article images
+  const pxKey=document.getElementById('kPexels').value.trim();
+  if(pxKey){
+    document.getElementById('imgQuery').value=p.photo_query||'';
+    await searchPexels();
+  } else {
+    await loadPhotoGrid();
+  }
+}
+
+function download(){
+  if(!document.getElementById('fHead').value){alert('Generate a post first.');return;}
+  renderCanvas();
+  setTimeout(()=>{
+    try{
+      const a=document.createElement('a');
+      a.download=`${brand}_post_${Date.now()}.jpg`;
+      a.href=canvas.toDataURL('image/jpeg',0.95);
+      a.click();toast('Downloaded ✓');
+    }catch(e){alert('Right-click the post image and Save As.\nError: '+e.message);}
+  },150);
+}
+
+// init
+fsLoad();
+// restore pexels key to topbar from storage
+const _cfg=fsGet();
+if(_cfg.pexelsKey){
+  document.getElementById('kPexels').value=_cfg.pexelsKey;
+  document.getElementById('pxdot').classList.add('ok');
+}
+document.fonts.ready.then(()=>{fontsReady=true;renderCanvas();});
+renderCanvas();
+</script>
+<!-- PASSWORD OVERLAY -->
+<div id="pwOverlay" style="
+  position:fixed;inset:0;z-index:9999;
+  background:#0b0b0e;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:0;
+">
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:.04em;color:#f2f0ec;line-height:1;">
+      KL<span style="color:#d4af37;">AUDE</span>
+    </div>
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,240,236,.3);margin-top:6px;font-family:'DM Sans',sans-serif;">
+      Content Studio
+    </div>
+  </div>
+
+  <div style="
+    background:#111116;border:1px solid rgba(255,255,255,.07);
+    border-radius:14px;padding:32px 36px;width:320px;
+    display:flex;flex-direction:column;gap:14px;
+  ">
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,240,236,.35);font-family:'DM Sans',sans-serif;text-align:center;">
+      Enter password to continue
+    </div>
+    <input id="pwInput" type="password" placeholder="••••••••••••"
+      style="
+        background:#18181f;border:1px solid rgba(255,255,255,.07);
+        border-radius:8px;color:#f2f0ec;font-family:'DM Mono',monospace;
+        font-size:15px;padding:12px 16px;width:100%;outline:none;
+        text-align:center;letter-spacing:.15em;transition:border-color .2s;
+      "
+      onkeydown="if(event.key==='Enter')checkPW()"
+      oninput="document.getElementById('pwErr').style.opacity='0'"
+      onfocus="this.style.borderColor='rgba(212,175,55,.5)'"
+      onblur="this.style.borderColor='rgba(255,255,255,.07)'"
+    >
+    <button onclick="checkPW()" style="
+      background:linear-gradient(135deg,#d4af37,#b8960f);
+      color:#000;font-family:'Bebas Neue',sans-serif;
+      font-size:16px;letter-spacing:.12em;padding:13px;
+      border:none;border-radius:8px;cursor:pointer;
+      transition:opacity .15s;width:100%;
+    "
+    onmouseover="this.style.opacity='.88'"
+    onmouseout="this.style.opacity='1'"
+    >
+      Enter Studio
+    </button>
+    <div id="pwErr" style="
+      font-size:11px;color:#ef4444;text-align:center;
+      font-family:'DM Sans',sans-serif;opacity:0;transition:opacity .2s;
+    ">
+      Incorrect password — try again
+    </div>
+  </div>
+</div>
+
+<script>
+// run before other scripts so overlay shows immediately
+(function(){
+  // check if already authenticated this session
+  if(sessionStorage.getItem('klaude_auth')==='1'){
+    document.getElementById('pwOverlay').style.display='none';
+  }
+})();
+
+function checkPW(){
+  const val=document.getElementById('pwInput').value;
+  if(val==='SuperKlaude'){
+    sessionStorage.setItem('klaude_auth','1');
+    const overlay=document.getElementById('pwOverlay');
+    overlay.style.transition='opacity .4s';
+    overlay.style.opacity='0';
+    setTimeout(()=>overlay.style.display='none',400);
+  } else {
+    const err=document.getElementById('pwErr');
+    const input=document.getElementById('pwInput');
+    err.style.opacity='1';
+    input.style.borderColor='rgba(239,68,68,.6)';
+    input.value='';
+    input.focus();
+    setTimeout(()=>input.style.borderColor='rgba(255,255,255,.07)',1500);
+  }
+}
+</script>
+
+</body>
+</html>
